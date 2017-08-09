@@ -3,22 +3,7 @@ let _ = require('underscore-node');
 
 let contactStorage = []; // here is where you'll store your contacts
 
-//constructing table for key value pairs
-const table = function(){
-  sort(contactStorage);
-  console.log('Loading contact data...');
-  console.log('...Finished loading contact data.');
-  console.log('All Contacts:');
 
-  let firstColumnLength = findLongestWordPerColumn(contactStorage, 'first_name', 'last_name');
-  let secondColumnLength = findLongestWordPerColumn(contactStorage, 'email');
-  horizontalBreaks(firstColumnLength, secondColumnLength);
-  insertTextColumn(firstColumnLength, secondColumnLength,'Full Name','Email addresses');
-  horizontalBreaks(firstColumnLength, secondColumnLength);
-  fillInNames(firstColumnLength, secondColumnLength, contactStorage);
-  horizontalBreaks(firstColumnLength, secondColumnLength);
-
-};
 
 //finds length of each column
 const findLongestWordPerColumn = function(arrayOfObjects, targetLengthOne, targetLengthTwo){
@@ -32,7 +17,7 @@ const findLongestWordPerColumn = function(arrayOfObjects, targetLengthOne, targe
   });
 
   if(targetLengthOne === 'first_name'){
-      let fullName = objectReturned[targetLengthOne].length+objectReturned[targetLengthOne].length+1;
+      let fullName = objectReturned[targetLengthOne].length+objectReturned[targetLengthTwo].length+1;
       return fullName
     }
    return objectReturned[targetLengthOne].length;
@@ -41,11 +26,7 @@ const findLongestWordPerColumn = function(arrayOfObjects, targetLengthOne, targe
 //creates horizontal line breaks
 const horizontalBreaks = function(lengthOne, lengthTwo){
 
-    let begin = '|';
-    let middle = '-';
-    let end = '+';
-
-    let lineBreak = begin+middle.repeat(lengthOne+2)+end+middle.repeat(lengthTwo+2)+begin;
+    let lineBreak = '|'+'-'.repeat(lengthOne+2)+'+'+'-'.repeat(lengthTwo+2)+'|';
     console.log(lineBreak)
 };
 
@@ -62,11 +43,12 @@ const fillInNames = function(firstColumnLength, secondColumnLength,arrayOfContac
 
 //fills in text into each column and separates columns accordingly
 const insertTextColumn = function(lengthOne, lengthTwo, textColumnOne, textColumnTwo){
-  let begin = '|';
-  let space = ' ';
+// firstColumnLength, secondColumnLength,'Full Name','Email addresses'
+// console.log('######## ', lengthOne, textColumnOne, textColumnOne.length)
+// console.log('$$$$$$$ ', (lengthOne-textColumnOne.length+1))
 
-  let textInsertedColumn = begin+space.repeat(1)+textColumnOne+space.repeat(lengthOne-textColumnOne.length+1)+begin;
-  textInsertedColumn += space.repeat(1)+textColumnTwo+space.repeat(lengthTwo-textColumnTwo.length+1)+begin;
+  let textInsertedColumn = '|'+' '.repeat(1)+textColumnOne+' '.repeat(lengthOne-textColumnOne.length+1)+'|';
+  textInsertedColumn += ' '.repeat(1)+textColumnTwo+' '.repeat(lengthTwo-textColumnTwo.length+1)+'|';
   console.log(textInsertedColumn);
 };
 
@@ -87,8 +69,9 @@ const insertTextColumn = function(lengthOne, lengthTwo, textColumnOne, textColum
  */
 
 const addContact = function(firstName, lastName, email) {
+  console.log('Loading contact data...');
   //push one contact into contacts array
-  contactStorage.push({firstNamelastName, email});
+  contactStorage.push({first_name: firstName,last_name: lastName, email: email});
 };
 
 /*
@@ -115,6 +98,7 @@ const addContact = function(firstName, lastName, email) {
  *    undefined
  */
 const addContacts = function(contacts) {
+    console.log('Loading contact data...');
   //must iterate through contactsArray
   _.each(contacts, function(eachContact){
   //push each contact object into contact array
@@ -157,6 +141,32 @@ const sort = function(arrayOfObject){
  *    undefined
  */
 
+ //constructing table for key value pairs
+ const table = function(){
+   console.log('...Finished loading contact data.');
+   console.log('All Contacts:');
+   //default setting of empty table;
+   let firstColumnLength = 10;
+   let secondColumnLength = 30;
+
+   if(contactStorage.length > 0){
+     sort(contactStorage);
+     firstColumnLength = findLongestWordPerColumn(contactStorage, 'first_name', 'last_name');
+     secondColumnLength = findLongestWordPerColumn(contactStorage, 'email');
+     horizontalBreaks(firstColumnLength, secondColumnLength);
+     insertTextColumn(firstColumnLength, secondColumnLength,'Full Name','Email addresses');
+     horizontalBreaks(firstColumnLength, secondColumnLength);
+     fillInNames(firstColumnLength, secondColumnLength, contactStorage);
+     horizontalBreaks(firstColumnLength, secondColumnLength);
+   } else {
+
+     horizontalBreaks(firstColumnLength, secondColumnLength);
+     insertTextColumn(firstColumnLength, secondColumnLength,'Full Name','Email addresses');
+     horizontalBreaks(firstColumnLength, secondColumnLength);
+     fillInNames(firstColumnLength, secondColumnLength, contactStorage);
+     horizontalBreaks(firstColumnLength, secondColumnLength);
+   }
+ };
 
 const printContacts = function() {
   //make table that prints out full name and email addresses
