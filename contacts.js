@@ -3,13 +3,11 @@ let _ = require('underscore-node');
 
 let contactStorage = []; // here is where you'll store your contacts
 
-
-
 //finds length of each column
-const findLongestWordPerColumn = function(arrayOfObjects, targetLengthOne, targetLengthTwo){
+const setColumnLength = function(arrayOfObjects, targetLengthOne, targetLengthTwo){
 
   let objectReturned =  _.max(arrayOfObjects, function(eachObject){
-    if(targetLengthTwo){
+      if(targetLengthTwo){
       let fullName = eachObject[targetLengthOne]+' '+eachObject[targetLengthTwo];
       return fullName.length;
     }
@@ -18,40 +16,34 @@ const findLongestWordPerColumn = function(arrayOfObjects, targetLengthOne, targe
 
   if(targetLengthOne === 'first_name'){
       let fullName = objectReturned[targetLengthOne].length+objectReturned[targetLengthTwo].length+1;
-      return fullName
+      return fullName;
     }
    return objectReturned[targetLengthOne].length;
 };
 
 //creates horizontal line breaks
 const horizontalBreaks = function(lengthOne, lengthTwo){
-
     let lineBreak = '|'+'-'.repeat(lengthOne+2)+'+'+'-'.repeat(lengthTwo+2)+'|';
-    console.log(lineBreak)
-};
-
-// fills contact information in table
-const fillInNames = function(firstColumnLength, secondColumnLength,arrayOfContactObj){
-  _.each(arrayOfContactObj, function(eachObj){
-      let fullName = eachObj.first_name+' '+ eachObj.last_name;
-      let email = eachObj.email;
-
-//calls function to fill in table with contact name and email
-      insertTextColumn(firstColumnLength, secondColumnLength, fullName, email)
-  });
+    console.log(lineBreak);
 };
 
 //fills in text into each column and separates columns accordingly
 const insertTextColumn = function(lengthOne, lengthTwo, textColumnOne, textColumnTwo){
-// firstColumnLength, secondColumnLength,'Full Name','Email addresses'
-// console.log('######## ', lengthOne, textColumnOne, textColumnOne.length)
-// console.log('$$$$$$$ ', (lengthOne-textColumnOne.length+1))
-
   let textInsertedColumn = '|'+' '.repeat(1)+textColumnOne+' '.repeat(lengthOne-textColumnOne.length+1)+'|';
   textInsertedColumn += ' '.repeat(1)+textColumnTwo+' '.repeat(lengthTwo-textColumnTwo.length+1)+'|';
   console.log(textInsertedColumn);
 };
 
+// fills contact information in table
+const fillInNames = function(firstColumnLength, secondColumnLength,arrayOfContactObj){
+//loops through each object and provides text needed to insert text to table
+  _.each(arrayOfContactObj, function(eachObj){
+      let fullName = eachObj.first_name+' '+ eachObj.last_name;
+      let email = eachObj.email;
+//calls function to fill in table with contact name and email
+      insertTextColumn(firstColumnLength, secondColumnLength, fullName, email);
+  });
+};
 
 /*
  * addContact
@@ -69,8 +61,7 @@ const insertTextColumn = function(lengthOne, lengthTwo, textColumnOne, textColum
  */
 
 const addContact = function(firstName, lastName, email) {
-  console.log('Loading contact data...');
-  //push one contact into contacts array
+  //push one contact object into contact storage array
   contactStorage.push({first_name: firstName,last_name: lastName, email: email});
 };
 
@@ -97,12 +88,13 @@ const addContact = function(firstName, lastName, email) {
  *  Returns:
  *    undefined
  */
+
+ //adds multiple contacts at once
 const addContacts = function(contacts) {
-    console.log('Loading contact data...');
-  //must iterate through contactsArray
+  //must iterate through contactsArray of objects
   _.each(contacts, function(eachContact){
   //push each contact object into contact array
-    contactStorage.push({first_name: eachContact.first_name, last_name : eachContact.last_name, email: eachContact.email});
+    addContact(eachContact.first_name, eachContact.last_name, eachContact.email);
   });
 
 };
@@ -111,17 +103,19 @@ const addContacts = function(contacts) {
 const sort = function(arrayOfObject){
 
   // sort by name
+  //compare function is sorted according to the return value of the compare function recursively.
   arrayOfObject.sort(function(a, b) {
     let first_nameA = a.first_name.toUpperCase(); // ignore upper and lowercase
     let first_nameB = b.first_name.toUpperCase(); // ignore upper and lowercase
     if (first_nameA < first_nameB) {
+      //sort a to an index lower than b
       return -1;
     }
     if (first_nameA > first_nameB) {
+      //sort b to a lower index than a
       return 1;
     }
-
-    // names must be equal
+    // leaves a and b unchanged with respect to each other
     return 0;
   });
 };
@@ -151,15 +145,14 @@ const sort = function(arrayOfObject){
 
    if(contactStorage.length > 0){
      sort(contactStorage);
-     firstColumnLength = findLongestWordPerColumn(contactStorage, 'first_name', 'last_name');
-     secondColumnLength = findLongestWordPerColumn(contactStorage, 'email');
+     firstColumnLength = setColumnLength(contactStorage, 'first_name', 'last_name');
+     secondColumnLength = setColumnLength(contactStorage, 'email');
      horizontalBreaks(firstColumnLength, secondColumnLength);
      insertTextColumn(firstColumnLength, secondColumnLength,'Full Name','Email addresses');
      horizontalBreaks(firstColumnLength, secondColumnLength);
      fillInNames(firstColumnLength, secondColumnLength, contactStorage);
      horizontalBreaks(firstColumnLength, secondColumnLength);
    } else {
-
      horizontalBreaks(firstColumnLength, secondColumnLength);
      insertTextColumn(firstColumnLength, secondColumnLength,'Full Name','Email addresses');
      horizontalBreaks(firstColumnLength, secondColumnLength);
@@ -169,6 +162,7 @@ const sort = function(arrayOfObject){
  };
 
 const printContacts = function() {
+  console.log('Loading contact data...');
   //make table that prints out full name and email addresses
   table();
 };
