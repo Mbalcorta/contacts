@@ -278,3 +278,7 @@ console.log('Could not import '+incorrectInput.length+' contacts.');
 incorrectInput.forEach(function(eachObject){
   console.log('First: ' +eachObject.First+','+' Last: '+ eachObject.Last+','+' Email: '+ eachObject.Email)
 })
+//console.asserts()
+//  console.assert(typeof addContacts === 'function', 'not a function')
+// console.assert(incorrectInput.length === 3, 'addContact not filtering and pushing incorrect contacts');
+// console.assert(contactStorage.length === 20, '######addContact not filtering and pushing incorrect contacts')
