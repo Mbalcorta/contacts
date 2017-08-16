@@ -1,8 +1,11 @@
-  'use strict';
+'use strict';
+const {InputError} = require('./errorFunc');
+
 let _ = require('underscore-node');
 
 let contactStorage = []; // here is where you'll store your contacts
 
+let incorrectInput = [];
 //finds length of each column
 const setColumnLength = function(arrayOfObjects, targetLengthOne, targetLengthTwo){
 
@@ -45,58 +48,34 @@ const fillInNames = function(firstColumnLength, secondColumnLength,arrayOfContac
   });
 };
 
-/*
- * addContact
- *
- *  Arguments:
- *    firstName: String (required)
- *    lastName: String (required)
- *    email: String (required)
- *
- *  Example Usage:
- *    addContact('Betty', 'Holberton', 'betty.holberton@eniac.edu')
- *
- *  Returns:
- *    undefined
- */
 
 const addContact = function(firstName, lastName, email) {
-  //push one contact object into contact storage array
-  contactStorage.push({first_name: firstName,last_name: lastName, email: email});
+  var args = Array.from(arguments);
+  //done with regex
+  var stringValues = args.join(',');
+  var matches = stringValues.match(/\d[0-9 ]+|\W[0-9 ]+|(true|false)/)
+    if(matches === null){
+      matches = -1
+    }
+   if(matches.length > 0){
+     incorrectInput.push({First: firstName,Last: lastName,Email: email});
+     throw new InputError('Incorrect input given please enter string values only');
+   } else {
+      contactStorage.push({first_name: firstName,last_name: lastName, email: email});
+   }
 };
-
-/*
- * addContacts
- *
- *  Arguments:
- *    contacts: Array of contacts (required)
- *
- *  Example Usage:
- *    addContacts([
- *      {
- *        'first_name': 'Tanny',
- *        'last_name': 'Vibert',
- *        'email': 'tvibert0@illinois.edu',
- *      },
- *      {
- *        'first_name': 'Tova',
- *        'last_name': 'Myall',
- *        'email': 'tmyall1@instagram.com',
- *      }
- *    ])
- *
- *  Returns:
- *    undefined
- */
 
  //adds multiple contacts at once
 const addContacts = function(contacts) {
   //must iterate through contactsArray of objects
-  _.each(contacts, function(eachContact){
+contacts.forEach(function(contact){
   //push each contact object into contact array
-    addContact(eachContact.first_name, eachContact.last_name, eachContact.email);
+    try{
+        addContact(contact.first_name, contact.last_name, contact.email);
+    } catch(error){
+        // console.log(error.message+': '+contact.first_name, contact.last_name, contact.email);
+    }
   });
-
 };
 
 //sorts contacts of array of objects by alphabetical order
@@ -120,25 +99,9 @@ const sort = function(arrayOfObject){
   });
 };
 
-/*
- * printContacts
- *
- *  Arguments:
- *    none
- *
- *  Example Usage:
- *    addContacts()
- *
- *  Note: output goes to STDOUT using console.log
- *
- *  Returns:
- *    undefined
- */
 
  //constructing table for key value pairs
  const table = function(){
-   console.log('...Finished loading contact data.');
-   console.log('All Contacts:');
    //default setting of empty table;
    let firstColumnLength = 10;
    let secondColumnLength = 30;
@@ -162,10 +125,10 @@ const sort = function(arrayOfObject){
  };
 
 const printContacts = function() {
-  console.log('Loading contact data...');
   //make table that prints out full name and email addresses
   table();
 };
+
 ////////////////////////////////////////////////////////////
 /*          Do not make changes below this line           */
 ////////////////////////////////////////////////////////////
@@ -273,4 +236,45 @@ addContacts([
   },
 ]);
 
+// addContact('55','Myall','tmyall1@instagram.com');
+// addContacts([
+//   {
+//     'first_name': 'Tanny',
+//     'last_name': 'Vibert',
+//     'email': 'tvibert0@illinois.edu',
+//   },
+//   {
+//     'first_name': 'Tova',
+//     'last_name': 'Myall',
+//     'email': 'tmyall1@instagram.com',
+//   },
+//   {
+//     'first_name': 'Engracia',
+//     'last_name': 'Folger',
+//     'email': 'efolger2@epa.gov',
+//   }
+// ]);
+
+addContacts([{
+    'first_name': '55',
+    'last_name': 'Myall',
+    'email': 'tmyall1@instagram.com'
+  },
+  {
+    'first_name': 'Virgina',
+    'last_name': 'Cankett',
+    'email': 'true'
+  },
+  {
+    'first_name': 'Willdon',
+    'last_name': '22',
+    'email': 'whedleyd@purevolume.com'
+}
+]);
+
 printContacts();
+console.log('Could not import '+incorrectInput.length+' contacts.');
+
+incorrectInput.forEach(function(eachObject){
+  console.log('First: ' +eachObject.First+','+' Last: '+ eachObject.Last+','+' Email: '+ eachObject.Email)
+})
